@@ -10,10 +10,10 @@ The system shall allow the user to create a new recipe by providing recipe detai
 **User Interaction & Behavior:**  
 - User selects the "Add Recipe" option from the menu.
 - User is prompted to enter:
+  - Recipe Category
   - Recipe name
   - Ingredients (multiple entries)
   - Cooking steps (multiple entries)
-  - Optional notes
 - System validates input and saves the recipe.
 - A confirmation message is displayed upon success.
 
@@ -53,9 +53,8 @@ The system shall allow the Admin to remove an existing recipe.
 The system shall display all saved recipes or detailed information for a selected recipe.
 
 **User Interaction & Behavior:**  
-- User selects "View Recipes".
-- System shows a list of recipes.
-- User may select a recipe to view full details.
+- User has a option to "View Recipes".
+- User has a option to View steps of recipes.
 - System formats and displays recipe information clearly.
 
 ---
@@ -118,4 +117,39 @@ The system shall allow the user to Export and Import recipes.
 ## File Structure
 
 ### Planned Folder Organization
-
+```text
+recipe_console_application/
+├── dist/
+│   └── main.js
+├── documents/
+│   └── Markdown and Diagrams Files
+├── node_modules/
+├── src/
+│   ├── Database/
+│   │   ├── db.ts
+│   │   └── recipe.db
+│   ├── models/
+│   │   ├── users.ts
+│   │   └── recipes.ts
+│   ├── modules/
+│   │   ├── addUserModule.ts
+│   │   ├── deleteRecipe.ts
+│   │   ├── importExportModule.ts
+│   │   ├── insertRecipeModule.ts
+│   │   ├── searchRecipeModule.ts
+│   │   ├── updateRecipeModule.ts
+│   │   └── viewAllRecipeModule.ts
+│   ├── service/
+│   │   ├── crudService.ts
+│   │   ├── exportService.ts
+│   │   ├── importService.ts
+│   │   ├── loginService.ts
+│   │   └── recipeApp.ts
+│   ├── utils/
+│   │   ├── askRequired.ts
+│   │   ├── consoleFormatter.ts
+│   │   ├── input.ts
+│   │   └── jsonHelper.ts
+│   └── main.ts
+├── tsconfig.json
+└── package.json
