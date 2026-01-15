@@ -212,7 +212,7 @@ async insertNewUser(username: string): Promise<User> {
 
     return new Promise((resolve, reject) => {
       db.all(`
-        SELECT r.category, r.name, u.username AS createdBy
+        SELECT r.id, r.category, r.name, u.username AS createdBy
         FROM recipes r
         JOIN users u ON r.user_id = u.id
       `, (err: Error | null, rows: []) => {
