@@ -1,7 +1,7 @@
 export interface User {
-    id?: number | undefined;
+    id: number | undefined;
     username: string;
     created_at: string;
-    isAdmin?: number; 
+    isAdmin: number; 
 
 }
