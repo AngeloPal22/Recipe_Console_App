@@ -3,6 +3,7 @@ import { CrudService } from '../service/crudService';
 import { User } from '../models/users';
 import { recipe } from '../models/recipes';
 import { askRequired } from '../utils/askRequired';
+import { editArray } from '../utils/arrayEditor';
 
 export class UpdateRecipeModule {
 
@@ -10,51 +11,75 @@ export class UpdateRecipeModule {
     const service = new CrudService();
 
     try {
-      const idInput = await askRequired('Recipe ID to update: ');
-      const id = Number(idInput);
-
+      const id = Number(await askRequired('Recipe ID to update: '));
       if (isNaN(id)) {
-        console.log('Invalid recipe ID.');
+        console.log('❌ Invalid recipe ID.');
         return;
       }
 
-      const existing: recipe | null = await service.getRecipeById(id);
-
+      const existing = await service.getRecipeById(id);
       if (!existing) {
-        console.log('Recipe not found.');
+        console.log('❌ Recipe not found.');
         return;
       }
 
-      console.log('\nPress ENTER to keep the current value.\n');
+      if (existing.user_id !== currentUser.id && currentUser.isAdmin !== 1) {
+        console.log('❌ You can only edit your own recipes.');
+        return;
+      }
 
-      const category = await ask(`Category [${existing.category}]: `);
-      const name = await ask(`Name [${existing.name}]: `);
-      const ingredients = await ask('Ingredients (leave empty to keep): ');
-      const steps = await ask('Steps (leave empty to keep): ');
+      console.log('\nWhat do you want to update?');
+      console.log('1. Category');
+      console.log('2. Name');
+      console.log('3. Ingredients');
+      console.log('4. Steps');
+      console.log('5. Cancel');
 
-      // Only update fields that were entered
+      const choice = await ask('Choose option: ');
+
       const updates: Partial<recipe> = {};
 
-      if (category.trim() !== '') updates.category = category;
-      if (name.trim() !== '') updates.name = name;
-      if (ingredients.trim() !== '') updates.ingredients = ingredients;
-      if (steps.trim() !== '') updates.steps = steps;
+      switch (choice) {
+        case '1':
+          const category = await ask(`Category [${existing.category}]: `);
+          if (category.trim()) updates.category = category;
+          break;
 
-      // Always update metadata
+        case '2':
+          const name = await ask(`Name [${existing.name}]: `);
+          if (name.trim()) updates.name = name;
+          break;
+
+        case '3': {
+          const updatedIngredients = await editArray(existing.ingredients, 'ingredients');
+          if (updatedIngredients) updates.ingredients = updatedIngredients;
+          break;
+        }
+
+        case '4': {
+          const updatedSteps = await editArray(existing.steps, 'steps');
+          if (updatedSteps) updates.steps = updatedSteps;
+          break;
+        }
+
+        default:
+          console.log('Cancelled.');
+          return;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        console.log('No changes made.');
+        return;
+      }
+
       updates.lastEditedBy = currentUser.username;
       updates.updated_at = new Date().toISOString();
 
-      if (Object.keys(updates).length === 2) {
-        // Only metadata was updated
-        console.log('No changes detected.');
-        return;
-      }
-
       await service.updateRecipe(id, updates);
-      console.log('Recipe updated successfully.');
+      console.log('✔ Recipe updated successfully.');
 
     } catch (err) {
-      console.error('Update failed:', err);
+      console.error('❌ Update failed.');
     }
   }
 }
